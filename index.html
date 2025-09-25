@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Identifikasi Daun Jati</title>
+  <meta name="theme-color" content="#0b8a6a" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Path ke CSS tetap sama relatif terhadap index.html -->
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="brand">
+      <!-- Path ke gambar perlu disesuaikan -->
+      <img src="./assets/img/logo.png" alt="" id="logo" aria-hidden="true" />
+      <div class="brand-text">
+        <h1>Identifikasi Daun Jati</h1>
+        <p class="subtitle">Klasifikasi Gamelina • Biotrop • Salomon</p>
+      </div>
+    </div>
+
+    <nav class="nav-actions">
+      <button id="btn-home" class="nav-btn is-active" data-page="home" aria-current="page">
+        <span class="i i-home" aria-hidden="true"></span><span>Home</span>
+      </button>
+      <button id="btn-history" class="nav-btn" data-page="history">
+        <span class="i i-clock" aria-hidden="true"></span><span>Riwayat</span>
+      </button>
+      <button id="btn-info" class="nav-btn" data-page="info">
+        <span class="i i-info" aria-hidden="true"></span><span>Informasi</span>
+      </button>
+      <button id="toggle-theme" class="theme-toggle" aria-pressed="false" title="Mode Gelap/Terang" aria-label="Toggle tema">🌙</button>
+    </nav>
+  </header>
+
+  <!-- Patterns -->
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob b1"></span>
+    <span class="blob b2"></span>
+    <span class="blob b3"></span>
+    <span class="grid"></span>
+  </div>
+
+  <main class="container">
+    <!-- HOME -->
+    <section id="page-home" class="page">
+      <div class="hero layout">
+        <div class="hero-text">
+          <div class="section-kicker">
+            <span class="dot"></span> Sistem Demo
+          </div>
+          <h2>Unggah atau ambil foto daun jati</h2>
+          <p>
+            Gunakan kamera atau pilih file dari perangkat Anda. Sistem akan mengidentifikasi antara
+            <strong>Jati Putih (Gamelina)</strong>, <strong>Jati Super (Biotrop)</strong>, dan
+            <strong>Jati Jumbo (Salomon)</strong>.
+          </p>
+
+          <div class="pill-row">
+            <span class="pill pill-emerald">Realtime preview</span>
+            <span class="pill pill-lime">Capture kamera</span>
+            <span class="pill pill-gold">Confidence score</span>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <!-- Upload -->
+          <div class="card upload-card ring-gradient">
+            <div class="preview" id="preview-wrapper" aria-live="polite">
+              <div class="skeleton" id="skeleton"></div>
+              <span id="preview-placeholder">Preview gambar</span>
+              <img id="preview-image" alt="Preview gambar" />
+            </div>
+
+            <div class="controls">
+              <label class="file">
+                <input type="file" id="input-file" accept="image/*" />
+                <span class="file-cta">
+                  <svg class="i i-upload" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4-4 4M4 16v4h16v-4"/></svg>
+                  Pilih Gambar
+                </span>
+              </label>
+
+              <div class="camera-controls">
+                <button id="btn-open-camera" class="btn primary">
+                  <svg class="i i-camera" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l2-2h6l2 2h3v12H4z"/><circle cx="12" cy="13" r="4"/></svg>
+                  Ambil Foto
+                </button>
+                <button id="btn-capture" class="btn primary hidden">📸 Capture</button>
+                <button id="btn-close-camera" class="btn ghost hidden">✖ Tutup Kamera</button>
+              </div>
+
+              <video id="camera-stream" class="camera-stream hidden" autoplay playsinline></video>
+
+              <div class="action-row">
+                <button id="btn-send" class="btn success" disabled>
+                  <svg class="i i-rocket" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13 20 4l-9 16-1-6-6-1z"/></svg>
+                  Kirim ke API
+                </button>
+                <button id="btn-clear" class="btn ghost">Bersihkan</button>
+              </div>
+
+              <!-- progress (opsional: app.js bisa set width-nya) -->
+              <div class="progress-wrap" aria-hidden="true">
+                <div class="progress" id="progress-bar" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="card result-card" id="result-card" hidden>
+            <div class="result-header">
+              <h3>Hasil Klasifikasi</h3>
+              <div class="badge" id="result-badge">Siap</div>
+            </div>
+            <div class="result-body">
+              <p><strong>Jenis:</strong> <span id="result-class">—</span></p>
+              <p><strong>Confidence:</strong> <span id="result-confidence">—</span></p>
+            </div>
+            <div class="result-actions">
+              <button id="btn-save-history" class="btn primary">Simpan ke Riwayat</button>
+              <button id="btn-new" class="btn ghost">Ulangi</button>
+            </div>
+          </div>
+
+          <div class="status" id="status" aria-live="polite" role="status"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="page-history" class="page hidden">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker"><span class="dot"></span> Rekam Jejak</div>
+          <h2>Riwayat Hasil Klasifikasi</h2>
+        </div>
+        <div class="section-actions">
+          <button id="btn-clear-history" class="btn danger">
+            <span class="i i-trash" aria-hidden="true"></span> Hapus Riwayat
+          </button>
+        </div>
+      </div>
+
+      <div id="history-list" class="history-list" aria-live="polite">
+        <!-- Konten di-render oleh JavaScript -->
+      </div>
+    </section>
+
+    <!-- INFO -->
+    <section id="page-info" class="page hidden">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker"><span class="dot"></span> Referensi Cepat</div>
+          <h2>Informasi Jenis Daun Jati</h2>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <article class="card info-card">
+          <h3>Jati Putih</h3>
+          <p>Deskripsi singkat ciri-ciri Jati Putih (Gamelina): bentuk daun, urat, warna, tekstur, dsb.</p>
+        </article>
+
+        <article class="card info-card">
+          <h3>Jati Super</h3>
+          <p>Deskripsi singkat ciri-ciri Jati Super (Biotrop): perbedaan fisik yang mudah dikenali.</p>
+        </article>
+
+        <article class="card info-card" id="info-jati-jumb">
+          <h3>Jati Jumbo</h3>
+          <p>Deskripsi singkat ciri-ciri Jati Jumbo (Salomon).</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; <span id="year"></span> Identifikasi Daun Jati — Aplikasi Demo</p>
+  </footer>
+
+  <!-- DIUBAH: Menggunakan type="module" untuk memuat file utama yang baru -->
+  <script src="./src/core/app.js" type="module"></script>
+</body>
+</html>
