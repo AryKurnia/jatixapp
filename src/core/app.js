@@ -8,7 +8,6 @@ import { renderHistory } from '../components/history/historyList.js';
 import { initializeThemeSwitcher } from '../components/ui/themeSwitcher.js';
 import { initializeNavigation } from '../components/ui/navigation.js';
 
-
 // --- State Aplikasi ---
 let currentImageFile = null;
 let cameraStream = null;
@@ -16,7 +15,7 @@ let cameraStream = null;
 // --- Fungsi Logika Inti ---
 
 /**
- * Membersihkan pilihan gambar, preview, dan hasil.
+ * Membersihkan pilihan gambar, preview, dan hasil. Kembali ke state awal.
  */
 function clearSelection() {
   currentImageFile = null;
@@ -26,9 +25,13 @@ function clearSelection() {
   D.previewPlaceholder.style.display = 'block';
   if (D.inputFile) D.inputFile.value = '';
   
-  D.btnSend.disabled = true;
+  // Sembunyikan tombol kontekstual dan kartu hasil
+  D.contextualActions.classList.add('hidden');
   D.resultCard.hidden = true;
   
+  // Tampilkan kembali tombol aksi awal
+  D.initialActions.classList.remove('hidden');
+
   setStatus('');
 }
 
@@ -52,13 +55,16 @@ function handleFileSelect(file) {
         D.previewImage.src = e.target.result;
         D.previewImage.style.display = 'block';
         D.previewPlaceholder.style.display = 'none';
-        D.btnSend.disabled = false;
+        
+        // Tampilkan tombol kontekstual (Kirim, Ganti) dan sembunyikan tombol awal
+        D.contextualActions.classList.remove('hidden');
+        D.initialActions.classList.add('hidden');
+        
         D.resultCard.hidden = true;
         setStatus('');
     };
     reader.readAsDataURL(file);
 }
-
 
 // --- Pengaturan Event Listeners ---
 
@@ -94,28 +100,29 @@ async function handleSend() {
     }
     
     setStatus('Mengirim gambar ke server...');
-    D.btnSend.disabled = true;
+    D.contextualActions.classList.add('hidden');
     startProgress();
 
     try {
-        const result = await sendImageForPrediction(currentImageFile);
-        displayPredictionResult(result);
-        
-        // PERBAIKAN: Langsung simpan ke riwayat secara otomatis
-        const resultToSave = {
-            class: result.classification,
-            confidence: result.confidence,
-            fileUrl: URL.createObjectURL(currentImageFile), // Buat URL lokal untuk preview
-            timestamp: new Date().toISOString(),
-        };
-        saveToHistory(resultToSave);
-        setStatus('Hasil diterima dan otomatis disimpan ke riwayat.');
+      const result = await sendImageForPrediction(currentImageFile);
+      displayPredictionResult(result);
+      
+      // PERBAIKAN: Gunakan fileUrl dari server
+      const resultToSave = {
+        class: result.classification,
+        confidence: result.confidence,
+        fileUrl: result.fileUrl, // <-- Gunakan URL dari hasil prediksi
+        timestamp: new Date().toISOString(),
+      };
+      saveToHistory(resultToSave);
+      setStatus('Hasil diterima dan otomatis disimpan ke riwayat.');
 
-    } catch (err) {
-        setStatus(err.message, true);
-    } finally {
-        finishProgress();
-    }
+  } catch (err) {
+      setStatus(err.message, true);
+      D.contextualActions.classList.remove('hidden');
+  } finally {
+      finishProgress();
+  }
 }
 
 // --- Logika Kamera ---
@@ -124,7 +131,13 @@ async function openCamera() {
     try {
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
         D.video.srcObject = cameraStream;
-        setCameraUiState(true);
+        setCameraUiState(true); // Helper ini mungkin perlu disesuaikan
+        
+        // Sesuaikan UI untuk mode kamera
+        D.initialActions.classList.add('hidden');
+        D.cameraControls.classList.remove('hidden');
+        D.video.classList.remove('hidden');
+
         setStatus('Kamera aktif. Arahkan kamera ke daun dan tekan "Potret".');
     } catch (err) {
         console.error("Camera access error:", err);
@@ -157,7 +170,11 @@ function closeCamera() {
         cameraStream.getTracks().forEach(track => track.stop());
         cameraStream = null;
     }
+    // Kembalikan UI ke state awal
     setCameraUiState(false);
+    D.initialActions.classList.remove('hidden');
+    D.cameraControls.classList.add('hidden');
+    D.video.classList.add('hidden');
     setStatus('');
 }
 

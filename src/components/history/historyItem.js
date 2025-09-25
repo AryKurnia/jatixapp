@@ -41,7 +41,9 @@ export function createHistoryItemElement(item, index) {
   actions.className = 'history-actions';
   const btnDelete = document.createElement('button');
   btnDelete.className = 'btn ghost';
-  btnDelete.innerHTML = '<span class="i i-trash" aria-hidden="true"></span> Hapus';
+  btnDelete.innerHTML = `<span class="i i-trash" aria-hidden="true">
+  <img src="../../../assets/img/trash-icon.svg" alt="" class="trash-icon" width="18" height="18"/>
+</span> Hapus`;
   btnDelete.setAttribute('aria-label', `Hapus item riwayat ${item.class}`);
   btnDelete.addEventListener('click', () => {
     if (confirm('Hapus item ini dari riwayat?')) {

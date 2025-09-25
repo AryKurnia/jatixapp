@@ -27,9 +27,12 @@ export const DOMElements = {
   btnOpenCamera: document.getElementById('btn-open-camera'),
   btnCapture: document.getElementById('btn-capture'),
   btnCloseCamera: document.getElementById('btn-close-camera'),
+  cameraControls: document.querySelector('.camera-controls'), // Ditambahkan
   video: document.getElementById('camera-stream'),
 
   // Actions
+  initialActions: document.getElementById('initial-actions'), // Ditambahkan
+  contextualActions: document.getElementById('contextual-actions'), // Ditambahkan
   btnSend: document.getElementById('btn-send'),
   btnClear: document.getElementById('btn-clear'),
   
@@ -41,7 +44,6 @@ export const DOMElements = {
   resultCard: document.getElementById('result-card'),
   resultClass: document.getElementById('result-class'),
   resultConfidence: document.getElementById('result-confidence'),
-  btnSaveHistory: document.getElementById('btn-save-history'),
   btnNew: document.getElementById('btn-new'),
   
   // History Page

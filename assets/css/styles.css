@@ -22,7 +22,7 @@
 }
 
 :root[data-theme="dark"] {
-  --ink: #e2e8f0;
+  --ink: #a3b3cc;
   --muted: #a3b3cc;
   --muted-2: #94a3b8;
   --bg: #0b1220;
@@ -307,6 +307,7 @@ body {
   border: 2px dashed #cfe8e4;
   background: #f0fbf8;
   margin-bottom: 1rem;
+  align-content:center;
 }
 
 #preview-image {
@@ -464,6 +465,7 @@ body {
 
 /* Result card */
 .result-card {
+  margin-top: 10px;
   padding: 1rem;
 }
 
@@ -614,4 +616,13 @@ body {
   outline: 3px solid rgba(20, 184, 166, 0.45);
   outline-offset: 2px;
   border-radius: 8px;
+}
+
+/* Trash icon coloring for light/dark mode */
+.trash-icon {
+  filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0.6);
+  transition: filter 0.2s;
+}
+:root[data-theme="dark"] .trash-icon {
+  filter: invert(90%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(1.2);
 }
