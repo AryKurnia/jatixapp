@@ -89,6 +89,8 @@ body {
   margin: 0.15rem 0 0;
   font-size: 0.8rem;
   opacity: 0.9;
+  /* PERBAIKAN: Menambah shadow untuk keterbacaan */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .nav-actions {
@@ -112,6 +114,13 @@ body {
   background: rgba(255, 255, 255, 0.15);
   transition: background 0.2s, transform 0.12s;
   position: relative;
+}
+
+/* PERBAIKAN: Styling untuk ikon SVG di navigasi */
+.nav-btn .i {
+  width: 18px;
+  height: 18px;
+  stroke: #ffffff;
 }
 
 .nav-btn:hover,
@@ -390,7 +399,7 @@ body {
   color: #ffffff;
 }
 
-.btn.primary:hover {
+.btn.primary:hover:not(:disabled) {
   filter: brightness(1.06);
   transform: translateY(-1px);
 }
@@ -400,7 +409,7 @@ body {
   color: #ffffff;
 }
 
-.btn.success:hover {
+.btn.success:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
@@ -410,7 +419,7 @@ body {
   color: var(--ink);
 }
 
-.btn.ghost:hover {
+.btn.ghost:hover:not(:disabled) {
   background: rgba(2, 6, 23, 0.04);
 }
 
@@ -419,7 +428,7 @@ body {
   color: #ffffff;
 }
 
-.btn.danger:hover {
+.btn.danger:hover:not(:disabled) {
   filter: brightness(1.06);
 }
 
@@ -549,6 +558,13 @@ body {
   justify-content: flex-end;
 }
 
+/* PERBAIKAN: Menambahkan hover effect untuk konsistensi */
+.history-actions .btn.ghost:hover:not(:disabled) {
+    background: rgba(2, 6, 23, 0.04);
+    transform: translateY(-1px);
+}
+
+
 @media (max-width: 600px) {
   .history-item {
     grid-template-columns: 1fr;
@@ -599,4 +615,3 @@ body {
   outline-offset: 2px;
   border-radius: 8px;
 }
-

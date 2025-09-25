@@ -12,7 +12,6 @@ import { initializeNavigation } from '../components/ui/navigation.js';
 // --- State Aplikasi ---
 let currentImageFile = null;
 let cameraStream = null;
-let lastResult = null;
 
 // --- Fungsi Logika Inti ---
 
@@ -21,7 +20,6 @@ let lastResult = null;
  */
 function clearSelection() {
   currentImageFile = null;
-  lastResult = null;
 
   D.previewImage.src = '';
   D.previewImage.style.display = 'none';
@@ -29,7 +27,6 @@ function clearSelection() {
   if (D.inputFile) D.inputFile.value = '';
   
   D.btnSend.disabled = true;
-  D.btnSaveHistory.disabled = true;
   D.resultCard.hidden = true;
   
   setStatus('');
@@ -81,7 +78,6 @@ function setupEventListeners() {
     D.btnCloseCamera.addEventListener('click', closeCamera);
 
     // Riwayat
-    D.btnSaveHistory.addEventListener('click', handleSaveHistory);
     D.btnClearHistory.addEventListener('click', () => {
         if (confirm('Anda yakin ingin menghapus semua riwayat? Tindakan ini tidak dapat dibatalkan.')) {
             clearAllHistory();
@@ -104,33 +100,22 @@ async function handleSend() {
     try {
         const result = await sendImageForPrediction(currentImageFile);
         displayPredictionResult(result);
-        setStatus('Berhasil menerima hasil dari server.');
         
-        lastResult = {
+        // PERBAIKAN: Langsung simpan ke riwayat secara otomatis
+        const resultToSave = {
             class: result.classification,
             confidence: result.confidence,
-            fileUrl: result.fileUrl, // Asumsi API mengembalikan URL gambar
+            fileUrl: URL.createObjectURL(currentImageFile), // Buat URL lokal untuk preview
             timestamp: new Date().toISOString(),
         };
-        D.btnSaveHistory.disabled = false;
+        saveToHistory(resultToSave);
+        setStatus('Hasil diterima dan otomatis disimpan ke riwayat.');
 
     } catch (err) {
-        setStatus(`Gagal mendapatkan hasil: ${err.message}`, true);
+        setStatus(err.message, true);
     } finally {
         finishProgress();
-        // Jangan aktifkan tombol kirim lagi sampai ada gambar baru
-        D.btnSend.disabled = currentImageFile === null;
     }
-}
-
-function handleSaveHistory() {
-    if (!lastResult) {
-        setStatus('Tidak ada hasil untuk disimpan.', true);
-        return;
-    }
-    saveToHistory(lastResult);
-    setStatus('Hasil disimpan ke riwayat.');
-    D.btnSaveHistory.disabled = true;
 }
 
 // --- Logika Kamera ---
@@ -140,7 +125,7 @@ async function openCamera() {
         cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
         D.video.srcObject = cameraStream;
         setCameraUiState(true);
-        setStatus('Kamera aktif. Arahkan kamera ke daun dan tekan "Capture".');
+        setStatus('Kamera aktif. Arahkan kamera ke daun dan tekan "Potret".');
     } catch (err) {
         console.error("Camera access error:", err);
         setStatus('Tidak dapat mengakses kamera. Periksa izin browser.', true);
@@ -184,9 +169,6 @@ function initializeApp() {
     initializeThemeSwitcher();
     initializeNavigation();
     setupEventListeners();
-    
-    // Render riwayat untuk pertama kali jika halaman default adalah riwayat (opsional)
-    // renderHistory(); 
     
     console.log("Aplikasi berhasil diinisialisasi.");
 }

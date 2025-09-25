@@ -19,20 +19,27 @@ export async function sendImageForPrediction(imageFile) {
     });
 
     if (!response.ok) {
+      // PERBAIKAN: Memberikan pesan error server yang lebih baik
       const errorText = await response.text();
-      throw new Error(`Server error (${response.status}): ${errorText || 'Unknown error'}`);
+      throw new Error(`Terjadi masalah pada server (${response.status}). Coba lagi nanti.`);
     }
 
     const result = await response.json();
 
     if (!result.data || typeof result.data.classification === 'undefined' || typeof result.data.confidence !== 'number') {
-      throw new Error('Format respons API tidak valid.');
+      throw new Error('Format respons dari server tidak valid.');
     }
 
     return result.data;
   } catch (error) {
     console.error('Prediction API call failed:', error);
-    // Melempar ulang error agar bisa ditangani oleh pemanggil
+    
+    // PERBAIKAN: Mendeteksi error jaringan dan memberikan pesan yang lebih manusiawi
+    if (error instanceof TypeError) { // TypeError seringkali mengindikasikan masalah jaringan/CORS
+        throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+    }
+
+    // Melempar ulang error yang sudah memiliki pesan bagus atau error lainnya
     throw error;
   }
 }
